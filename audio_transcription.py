@@ -2,6 +2,7 @@ import speech_recognition as sr
 import os
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
+import shutil
 
 
 class AudioTranscription:
@@ -23,10 +24,14 @@ class AudioTranscription:
             # Loading the audio to memory
             audio_data = cls.r.record(source)
 
-            # Sending the loaded data to Google servers and getting the response.
-            text = cls.r.recognize_google(audio_data)
+            try:
+                # Sending the loaded data to Google servers and getting the response.
+                text = cls.r.recognize_google(audio_data)
+            except sr.UnknownValueError as e:
+                print(f'Error: {e}')
+                return "Operation Failed."
 
-            return text
+        return text
 
     @classmethod
     def large_audio_file_transcriptor(cls, path, min_silence_len = 500, keep_silence=500):
@@ -59,6 +64,10 @@ class AudioTranscription:
 
         # Creating the folder if not exits.
         if not os.path.isdir(folder_name):
+            os.mkdir(folder_name)
+        else:
+            # Removing the previous folder with all its files and creating an empty folder again.
+            shutil.rmtree(folder_name)
             os.mkdir(folder_name)
 
         # Final text output.
