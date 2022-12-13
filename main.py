@@ -2,16 +2,19 @@ import audio_transcription as at
 
 
 def main():
-    small_filename = "16-122828-0002.wav"
-    large_filename = "7601-291468-0006.wav"
+    small_filename = "Recording.wav"
+    large_filename = "Recording (4).wav"
 
     audio_transcription = at.AudioTranscription()
 
+    # Transcription for a standard audio file
     small_file_text = audio_transcription.standard_audio_file_transcriptor(small_filename)
+
+    # Transcription for a large audio file
     large_file_text = audio_transcription.large_audio_file_transcriptor(large_filename)
 
-    # print("Small File Text:")
-    # print(small_file_text)
+    print("Small File Text:")
+    print(small_file_text)
     print("================")
 
     print("Large File Text:")
