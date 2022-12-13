@@ -12,9 +12,10 @@ class AudioTranscription:
     r = sr.Recognizer()
 
     @classmethod
-    def standard_audio_file_transcriptor(cls, path):
+    def standard_audio_file_transcriptor(cls, path, language="en-US"):
         '''
         This method is used to get a standard audio file and return the transcript.
+        :param language: The language of the audio file
         :param path: Audio file path
         :return: Transcript of the audio file
         '''
@@ -26,17 +27,18 @@ class AudioTranscription:
 
             try:
                 # Sending the loaded data to Google servers and getting the response.
-                text = cls.r.recognize_google(audio_data)
+                text = cls.r.recognize_google(audio_data, language=language)
             except sr.UnknownValueError as e:
                 print(f'Error: {e}')
                 return "Operation Failed."
 
-        return text
+            return text
 
     @classmethod
-    def large_audio_file_transcriptor(cls, path, min_silence_len=500, keep_silence=500):
+    def large_audio_file_transcriptor(cls, path, min_silence_len=500, keep_silence=500, language="en-US"):
         '''
         This method is used for getting the transcript of a large audio file (Usually more than 10MB)
+        :param language: The language of the audio file.
         :param path: Audio file path
         :param min_silence_len: A number for the minimum silence length for splitting audio
         :param keep_silence: A number that tells the splitter how much silence should add
@@ -83,9 +85,10 @@ class AudioTranscription:
 
                 try:
                     # Sending the loaded data to Google servers and getting the response
-                    text = cls.r.recognize_google(audio_data)
+                    text = cls.r.recognize_google(audio_data, language=language)
                 except sr.UnknownValueError as e:
                     print(f"Error: {e}")
+                    text = ""
 
                 whole_text += f"{text}\n"
 
