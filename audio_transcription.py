@@ -34,7 +34,7 @@ class AudioTranscription:
         return text
 
     @classmethod
-    def large_audio_file_transcriptor(cls, path, min_silence_len = 500, keep_silence=500):
+    def large_audio_file_transcriptor(cls, path, min_silence_len=500, keep_silence=500):
         '''
         This method is used for getting the transcript of a large audio file (Usually more than 10MB)
         :param path: Audio file path
@@ -44,19 +44,15 @@ class AudioTranscription:
         '''
 
         # Opening the audio file using pydub and based on file extension
-        if str(path).endswith('.wav'):
-            sound = AudioSegment.from_wav(path)
-        elif str(path).endswith('.mp3'):
-            sound = AudioSegment.from_mp3(path)
-        elif str(path).endswith('.ogg'):
-            sound = AudioSegment.from_ogg(path)
-        else:
-            return "Illegal file format."
+        sound = cls.__get_sound(path)
+
+        if sound is None:
+            return "Illegal file."
 
         # Splitting audio file into chunks
         chunks = split_on_silence(sound,
                                   min_silence_len=min_silence_len,
-                                  silence_thresh=sound.dBFS-14,
+                                  silence_thresh=sound.dBFS - 14,
                                   keep_silence=keep_silence)
 
         # A new folder name for saving audio chunks
@@ -94,3 +90,21 @@ class AudioTranscription:
                 whole_text += f"{text}\n"
 
         return whole_text
+
+    @classmethod
+    def __get_sound(cls, path):
+        # Getting file extension
+        file_name, extension = os.path.splitext(path)
+
+        # Using match cases for faster detection of the extension and load sound.
+        match extension:
+            case '.mp3':
+                sound = AudioSegment.from_mp3(path)
+            case '.wav':
+                sound = AudioSegment.from_wav(path)
+            case '.ogg':
+                sound = AudioSegment.from_ogg(path)
+            case default:
+                return None
+        return sound
+
