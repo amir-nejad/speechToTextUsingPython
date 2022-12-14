@@ -1,8 +1,8 @@
 # Speech to Text Using Python
 This project is a simple project that can get the transcript of any voice file in any language using [SpeechRecognition](https://pypi.org/project/SpeechRecognition/) library and Google Speech Recognition API.
 
-## Project Files:
-- Audio files
+## Project Structure:
+- Source folder (Audio files)
 - audio_transcription.py
 - main.py
 
