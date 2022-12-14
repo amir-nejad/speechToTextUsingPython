@@ -3,9 +3,9 @@ import os
 
 
 def main():
-    small_filename = "Recording.wav"
-    large_filename = "Recording (4).wav"
-    persian_filename = "Recording (8).mp3"
+    small_filename = "source/Recording.wav"
+    large_filename = "source/Recording (4).wav"
+    persian_filename = "source/Recording (8).mp3"
 
     audio_transcription = AudioTranscription()
 
