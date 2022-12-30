@@ -19,6 +19,10 @@ class AudioTranscription:
         :param path: Audio file path
         :return: Transcript of the audio file
         '''
+        file_name, extension = os.path.splitext(path)
+
+        if extension != '.wav':
+            return cls.large_audio_file_transcriptor(path=path, language=language)
 
         # Opening the audio file
         with sr.AudioFile(path) as source:
@@ -49,7 +53,7 @@ class AudioTranscription:
         sound = cls.__get_sound(path)
 
         if sound is None:
-            return "Illegal file."
+            raise Exception("Illegal File")
 
         # Splitting audio file into chunks
         chunks = split_on_silence(sound,
@@ -87,11 +91,13 @@ class AudioTranscription:
                     # Sending the loaded data to Google servers and getting the response
                     text = cls.r.recognize_google(audio_data, language=language)
                 except sr.UnknownValueError as e:
-                    print(f"Error: {e}")
-                    text = ""
+                    text = "Error Unknown"
+                except Exception as e:
+                    text = e
 
                 whole_text += f"{text}\n"
 
+        shutil.rmtree(folder_name)
         return whole_text
 
     @classmethod

@@ -73,29 +73,45 @@ class Window(QWidget):
 
         self.submit_button.setDisabled(True)
         self.submit_button.setText("Processing...")
-
-        print(self.filename)
-        print(self.language)
+        self.button.setDisabled(True)
 
         app.processEvents()
-        if size > 5:
-            transcription = audio_transcription.large_audio_file_transcriptor(self.filename, self.language)
-        else:
-            transcription = audio_transcription.standard_audio_file_transcriptor(self.filename, self.language)
 
-        print(transcription)
+        try:
+            transcription = audio_transcription.large_audio_file_transcriptor(path=self.filename,
+                                                                              language=self.language)
+        except Exception as e:
+            self.submit_button.setText(e)
+
+            restart_button = QPushButton("Try for Another File")
+            restart_button.setStyleSheet("QPushButton { font-size: 1.3em; font-weight: bold; }")
+            restart_button.clicked.connect(lambda: self.restart())
+
+            self.layout.addWidget(restart_button)
+            return
+
         self.submit_button.setText("Writing output file...")
         app.processEvents()
 
         now_datetime = datetime.now()
 
-        output_file = f"transcription_{now_datetime.year}{now_datetime.month}{now_datetime.day}_{now_datetime.hour}{now_datetime.minute}_{now_datetime.second}_{now_datetime.microsecond}.txt"
+        if not os.path.isdir("output"):
+            os.mkdir("output")
+
+        output_file = f"output/transcription_{now_datetime.year}{now_datetime.month}{now_datetime.day}_{now_datetime.hour}{now_datetime.minute}_{now_datetime.second}_{now_datetime.microsecond}.txt"
 
         try:
             with open(output_file, 'w', encoding="UTF-8") as f:
                 f.write(transcription)
         except Exception as e:
-            print(e)
+            self.submit_button.setText(f"File saving was unsuccessful.")
+
+            restart_button = QPushButton("Try for Another File")
+            restart_button.setStyleSheet("QPushButton { font-size: 1.3em; font-weight: bold; }")
+            restart_button.clicked.connect(lambda: self.restart())
+
+            self.layout.addWidget(restart_button)
+            return
 
         self.submit_button.setText(f"Output file saved as {output_file}")
 
@@ -108,7 +124,6 @@ class Window(QWidget):
     def restart(self):
         QtCore.QCoreApplication.quit()
         status = QtCore.QProcess.startDetached(sys.executable, sys.argv)
-        print(status)
 
 
 if __name__ == "__main__":
